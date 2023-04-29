@@ -10,31 +10,31 @@ namespace WpfDependencyInjection;
 
 public partial class App : Application
 {
-    internal static IHost? AppHost { get; private set; }
+    internal static IHost? Host { get; private set; }
 
     public App()
     {
-        AppHost = AppHostBuilder.Create();
+        Host = AppHost.CreateHostBuilder().Build();
     }
 
     protected override async void OnStartup(StartupEventArgs e)
     {
-        await AppHost!.StartAsync();
+        await Host!.StartAsync();
 
-        var mainWindow = AppHost.Services.GetRequiredService<MainWindow>();
-        mainWindow.Show();
+        MainWindow = Host.Services.GetRequiredService<MainWindow>();
+        MainWindow.Visibility = Visibility.Visible;
 
         base.OnStartup(e);
     }
 
     protected override async void OnExit(ExitEventArgs e)
     {
-        await AppHost!.StopAsync();
-        AppHost!.Dispose();
+        await Host!.StopAsync();
+        Host!.Dispose();
 
         base.OnExit(e);
     }
 
     internal static object GetViewModel(Type viewType)
-        => AppHost!.Services.GetViewModel(viewType);
+        => Host!.Services.GetViewModel(viewType);
 }

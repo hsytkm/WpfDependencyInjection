@@ -6,9 +6,9 @@ using WpfLibrary;
 
 namespace WpfDependencyInjection.StartupHelpers;
 
-internal static class AppHostBuilder
+internal static class AppHost
 {
-    internal static IHost Create() => Host.CreateDefaultBuilder()
+    internal static IHostBuilder CreateHostBuilder() => Host.CreateDefaultBuilder()
         .ConfigureServices((hostContext, services) =>
         {
             services.AddViewAndViewModel<MainWindow, MainWindowViewModel>();
@@ -16,6 +16,5 @@ internal static class AppHostBuilder
             services.AddTransient<ChildFormViewModel>();
             services.AddSingleton<IDataAccess, DataAccess>();
 
-        })
-        .Build();
+        });
 }
