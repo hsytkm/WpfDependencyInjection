@@ -20,7 +20,7 @@ internal static class ServiceExtensions1
 
 internal static class ServiceExtensions2
 {
-    private readonly static Dictionary<Type, Type> _bindingViewAndViewModelDictionary = new();
+    private static readonly Dictionary<Type, Type> _bindingViewAndViewModelDictionary = new();
 
     /// <summary>
     /// View と ViewModel を関連付けて登録します
@@ -51,9 +51,9 @@ internal static class ServiceExtensions2
     /// <summary>
     /// 登録済みの View から ViewModel のインスタンスを取得します。 ViewModelLocator から利用されます。
     /// </summary>
-    internal static object GetViewModel(this IServiceProvider provider, Type viewType)
+    internal static object GetRequiredViewModel(this IServiceProvider provider, Type viewType)
         => _bindingViewAndViewModelDictionary.TryGetValue(viewType, out Type? viewModelType)
-            ? provider.GetService(viewModelType)!
+            ? provider.GetRequiredService(viewModelType)!
             : throw new KeyNotFoundException(viewType.ToString());
 
 }

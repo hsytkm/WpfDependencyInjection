@@ -4,7 +4,9 @@ using System.Windows;
 namespace WpfDependencyInjection.Views;
 
 /// <summary>
-/// 添付プロパティで DataContext を初期化します
+/// 添付プロパティで DataContext を初期化します。
+/// これを使用すると楽ですが、ctorで直接DIを経由して DataContext を設定した方が高速だと思います。
+///   local:ViewModelLocator.AutoWireViewModel="True"
 /// </summary>
 public static class ViewModelLocator
 {
@@ -16,9 +18,9 @@ public static class ViewModelLocator
 
     public static readonly DependencyProperty AutoWireViewModelProperty =
         DependencyProperty.RegisterAttached("AutoWireViewModel", typeof(bool), typeof(ViewModelLocator),
-            new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.NotDataBindable, AutoWireViewModelChanged));
+            new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.NotDataBindable, OnAutoWireViewModelChanged));
 
-    private static void AutoWireViewModelChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    private static void OnAutoWireViewModelChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         if (DesignerProperties.GetIsInDesignMode(d))
             return;
@@ -29,7 +31,7 @@ public static class ViewModelLocator
         if (e.NewValue is bool and true)
         {
             var viewType = element.GetType();
-            element.DataContext = App.GetViewModel(viewType);
+            element.DataContext = Program.GetViewModel(viewType);
         }
     }
 }
