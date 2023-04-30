@@ -5,7 +5,7 @@ public interface IAbstractFactory<T>
     T Create();
 }
 
-internal sealed class AbstractFactory<T> : IAbstractFactory<T>
+internal /*sealed*/ class AbstractFactory<T> : IAbstractFactory<T>
 {
     private readonly Func<T> _factory;
 

@@ -1,32 +1,72 @@
-﻿using System.ComponentModel;
-using System.Windows;
+﻿using System.Windows;
+using System.Windows.Controls;
 using WpfDependencyInjection.StartupHelpers;
 
 namespace WpfDependencyInjection.Views;
 
 public partial class MainWindow : Window
 {
-    private readonly IAbstractFactory<ChildForm> _childFormFactory;
+    private readonly IAbstractFactory<Parent1Page> _parent1Factory;
+    private readonly List<Control> _pages = new();
+    private int _displayedPagesCount = 0;
 
-    public MainWindow(IAbstractFactory<ChildForm> childFormFactory)
+    public MainWindow(IAbstractFactory<Parent1Page> parent1Factory)
     {
-        _childFormFactory = childFormFactory;
-
         InitializeComponent();
-        Closing += MainWindow_Closing;
+        _parent1Factory = parent1Factory;
+
+        AddNewPage();
     }
 
-    private void OpenChildForm_Click(object sender, RoutedEventArgs e)
+    private Parent1Page CreateParent1Page()
     {
-        // Create の度に新しいインスタンスが生成されます
-        // (DI でインスタンス自体を差し込む実装では、このような動作を実現できません)
-        _childFormFactory.Create().Show();
+        var page = _parent1Factory.Create();
+        page.Index = new PageIndex(_displayedPagesCount + 1);   // 1~
+        return page;
     }
 
-    private void MainWindow_Closing(object? sender, CancelEventArgs e)
+    private void AddButton_Click(object sender, RoutedEventArgs e) => AddNewPage();
+
+    private void AddNewPage()
     {
-        MessageBoxResult result = MessageBox.Show("Confirm Shutdown?", "MessageBox.Show", MessageBoxButton.OKCancel);
-        if (result is MessageBoxResult.Cancel)
-            e.Cancel = true;
+        // 非表示のPageが存在しなければインスタンスを追加します
+        if (_pages.Count <= _displayedPagesCount)
+        {
+            var page = CreateParent1Page();
+            _pages.Add(page);
+        }
+
+        static void addLastPage(Grid grid, Control panel)
+        {
+            Grid.SetColumn(panel, grid.ColumnDefinitions.Count);
+
+            grid.ColumnDefinitions.Add(new ColumnDefinition()
+            {
+                Width = new GridLength(1d, GridUnitType.Star)
+            });
+            grid.Children.Add(panel);
+        }
+        addLastPage(pagesGrid, _pages[_displayedPagesCount]);
+        _displayedPagesCount++;
+
+        Debug.WriteLine($"Add: PagesCount={_pages.Count}, DispCount={_displayedPagesCount}");
+    }
+
+    private void RemoveButton_Click(object sender, RoutedEventArgs e)
+    {
+        // Viewのインスタンスは保持しつつ、表示だけ消します
+        if (_displayedPagesCount > 0)
+        {
+            static void hiddenLastPage(Grid grid)
+            {
+                int deleteIndex = grid.ColumnDefinitions.Count - 1;
+                grid.Children.RemoveAt(deleteIndex);
+                grid.ColumnDefinitions.RemoveAt(deleteIndex);
+            }
+            hiddenLastPage(pagesGrid);
+            _displayedPagesCount--;
+        }
+
+        Debug.WriteLine($"Remove: PagesCount={_pages.Count}, DispCount={_displayedPagesCount}");
     }
 }

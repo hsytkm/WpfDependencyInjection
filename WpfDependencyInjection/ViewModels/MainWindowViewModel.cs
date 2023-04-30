@@ -1,21 +1,13 @@
-﻿using System.Windows.Input;
-using WpfLibrary;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace WpfDependencyInjection.ViewModels;
 
-public class MainWindowViewModel : ViewModelBase
+public sealed class MainWindowViewModel : ObservableObject
 {
-    public string Message
-    {
-        get => _message;
-        private set => SetProperty(ref _message, value);
-    }
-    private string _message = "";
+    public string Title { get; } = "WpfDependencyInjection";
 
-    public ICommand GetDataCommand { get; }
-
-    public MainWindowViewModel(IDataAccess dataAccess)
+    public MainWindowViewModel()
     {
-        GetDataCommand = new RelayCommand(() => Message = dataAccess.GetData());
+        
     }
 }

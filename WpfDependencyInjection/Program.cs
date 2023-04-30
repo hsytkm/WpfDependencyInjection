@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Windows;
+﻿using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using WpfDependencyInjection.StartupHelpers;
@@ -24,16 +23,13 @@ public static class Program
         mainWindow.Closing += (_, e) =>
         {
             if (e.Cancel) return;
-            Debug.WriteLine("MainWindowClosing()");     //-3
+            Debug.WriteLine("MainWindowClosing()");
         };
 
         App app = new();
         app.InitializeComponent();
         app.MainWindow = mainWindow;
-        app.Exit += (_, _) => Debug.WriteLine("AppExit() *cannot be canceled.");    //-2
         app.Run();
-
-        Debug.WriteLine("End Main()");  //-1
     }
 
     internal static object GetViewModel(Type viewType) => _host!.Services.GetRequiredViewModel(viewType);
@@ -43,9 +39,12 @@ public static class Program
             .ConfigureServices((_, services) =>
             {
                 services.AddViewAndViewModel<MainWindow, MainWindowViewModel>();
-                services.AddTransientFactory<ChildForm>();
-                services.AddTransient<ChildFormViewModel>();
-                services.AddSingleton<IDataAccess, DataAccess>();
 
+                services.AddTransientFactory<Parent1Page>();
+                services.AddTransient<Parent1PageViewModel>();
+                services.AddTransient<Child1View>();
+
+                //services.AddTransient<ChildFormViewModel>();
+                services.AddSingleton<IDataAccess, DataAccess>();
             });
 }

@@ -6,6 +6,6 @@ public class DataAccess : IDataAccess
 
     public string GetData()
     {
-        return $"Data {++_counter} from Library";
+        return $"{++_counter} from Library";
     }
 }

@@ -4,23 +4,32 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:viewmodels="clr-namespace:WpfDependencyInjection.ViewModels"
     xmlns:views="clr-namespace:WpfDependencyInjection.Views"
-    Title="WpfDependencyInjection"
-    Width="400"
-    Height="300"
-    d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowViewModel}"
+    Title="{Binding Title}"
+    Width="500"
+    Height="400"
     views:ViewModelLocator.AutoWireViewModel="True"
-    FontSize="18"
+    FontSize="16"
     mc:Ignorable="d">
 
-    <StackPanel Margin="10" HorizontalAlignment="Center">
-        <Button Command="{Binding GetDataCommand}" Content="Get Data" />
+    <DockPanel Background="LightGray">
+        <TextBlock
+            Margin="10"
+            DockPanel.Dock="Top"
+            FontSize="14">
+            <Run Text="1. Add and remove controls with buttons." /><LineBreak />
+            <Run Text="2. Hold instances while the control is hidden." /><LineBreak />
+            <Run Text="3. Disable all events in viewmodel while the control is hidden." />
+        </TextBlock>
 
-        <TextBlock Margin="10" Text="{Binding Message}" />
+        <UniformGrid
+            Margin="10"
+            Columns="2"
+            DockPanel.Dock="Top">
+            <Button Click="AddButton_Click" Content="Add" />
+            <Button Click="RemoveButton_Click" Content="Remove" />
+        </UniformGrid>
 
-        <Button Click="OpenChildForm_Click" Content="Open Child Form" />
-
-
-    </StackPanel>
+        <Grid x:Name="pagesGrid" />
+    </DockPanel>
 </Window>
