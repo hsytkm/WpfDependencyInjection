@@ -7,7 +7,7 @@
     xmlns:views="clr-namespace:WpfDependencyInjection.Views"
     Title="{Binding Title}"
     Width="500"
-    Height="400"
+    Height="500"
     views:ViewModelLocator.AutoWireViewModel="True"
     FontSize="16"
     mc:Ignorable="d">

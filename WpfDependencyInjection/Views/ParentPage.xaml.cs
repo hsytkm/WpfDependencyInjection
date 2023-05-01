@@ -4,9 +4,9 @@ using WpfDependencyInjection.ViewModels;
 
 namespace WpfDependencyInjection.Views;
 
-public partial class Parent1Page : UserControl, IIndexedPage
+public partial class ParentPage : UserControl, IIndexedPage
 {
-    private readonly Parent1PageViewModel _viewModel;
+    private readonly ParentPageViewModel _viewModel;
 
     public PageIndex Index
     {
@@ -24,17 +24,17 @@ public partial class Parent1Page : UserControl, IIndexedPage
     }
     private PageIndex _index;
 
-    public Parent1Page(Parent1PageViewModel viewModel, Child1View child1)
+    public ParentPage(ParentPageViewModel viewModel, ChildView childView)
     {
         DataContext = _viewModel = viewModel;
 
         InitializeComponent();
 
-        content.Content = child1;
-        IsVisibleChanged += Parent1Page_IsVisibleChanged;
+        content.Content = childView;
+        IsVisibleChanged += UserControl_IsVisibleChanged;
     }
 
-    private void Parent1Page_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+    private void UserControl_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
     {
         Debug.WriteLine($"IsVisibleChanged(Index={Index.Index}) : {e.NewValue}");
 

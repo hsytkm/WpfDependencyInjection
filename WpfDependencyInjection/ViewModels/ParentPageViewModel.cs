@@ -5,7 +5,7 @@ using Reactive.Bindings.Extensions;
 
 namespace WpfDependencyInjection.ViewModels;
 
-public sealed partial class Parent1PageViewModel : ObservableObject, IIndexedPage
+public sealed partial class ParentPageViewModel : ObservableObject, IIndexedPage
 {
     private CompositeDisposable? _disposables;
 
@@ -15,7 +15,7 @@ public sealed partial class Parent1PageViewModel : ObservableObject, IIndexedPag
     [ObservableProperty]
     int _counter;
 
-    public Parent1PageViewModel() { }
+    public ParentPageViewModel() { }
 
     private void Loaded()
     {

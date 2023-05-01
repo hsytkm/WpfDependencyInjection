@@ -6,21 +6,21 @@ namespace WpfDependencyInjection.Views;
 
 public partial class MainWindow : Window
 {
-    private readonly IAbstractFactory<Parent1Page> _parent1Factory;
+    private readonly IAbstractFactory<ParentPage> _parentFactory;
     private readonly List<Control> _pages = new();
     private int _displayedPagesCount = 0;
 
-    public MainWindow(IAbstractFactory<Parent1Page> parent1Factory)
+    public MainWindow(IAbstractFactory<ParentPage> parentFactory)
     {
         InitializeComponent();
-        _parent1Factory = parent1Factory;
+        _parentFactory = parentFactory;
 
         AddNewPage();
     }
 
-    private Parent1Page CreateParent1Page()
+    private ParentPage CreateParent1Page()
     {
-        var page = _parent1Factory.Create();
+        var page = _parentFactory.Create();
         page.Index = new PageIndex(_displayedPagesCount + 1);   // 1~
         return page;
     }

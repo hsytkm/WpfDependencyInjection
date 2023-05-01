@@ -9,7 +9,7 @@ using WpfLibrary;
 
 namespace WpfDependencyInjection.ViewModels;
 
-public sealed partial class Child1ViewModel : ObservableRecipient, IIndexedPage
+public sealed partial class ChildViewModel : ObservableRecipient, IIndexedPage
 {
     private CompositeDisposable? _disposables;
     private readonly IExternalObject _externalObject;
@@ -25,7 +25,7 @@ public sealed partial class Child1ViewModel : ObservableRecipient, IIndexedPage
     [ObservableProperty]
     PageIndex _index;
 
-    public Child1ViewModel(IExternalObject externalObject)
+    public ChildViewModel(IExternalObject externalObject)
     {
         _externalObject = externalObject;
         Message = externalObject.GetData();
@@ -74,7 +74,7 @@ public sealed partial class Child1ViewModel : ObservableRecipient, IIndexedPage
 
     protected override void OnActivated()
     {
-        Messenger.Register<Child1ViewModel, IncrementVmCounterRequestMessage>(this,
+        Messenger.Register<ChildViewModel, IncrementVmCounterRequestMessage>(this,
             static (r, _) => r.VmCounter++);
     }
 }

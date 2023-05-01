@@ -40,9 +40,9 @@ public static class Program
             {
                 services.AddViewAndViewModel<MainWindow, MainWindowViewModel>();
 
-                services.AddTransientFactory<Parent1Page>();
-                services.AddTransient<Parent1PageViewModel>();
-                services.AddViewAndViewModel<Child1View, Child1ViewModel>();
+                services.AddTransientFactory<ParentPage>();
+                services.AddTransient<ParentPageViewModel>();
+                services.AddViewAndViewModel<ChildView, ChildViewModel>();
 
                 //services.AddTransient<ChildFormViewModel>();
                 services.AddSingleton<IExternalObject, ExternalObject>();
