@@ -9,7 +9,8 @@ public class ExternalObject : IExternalObject
 
     public string GetData()
     {
-        return $"{++_counter1} from Library";
+        char c = (char)('A' + _counter1++);
+        return $"Group {c} from Lib";
     }
 
     public int Counter

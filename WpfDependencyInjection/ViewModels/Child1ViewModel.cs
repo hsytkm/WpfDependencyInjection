@@ -1,5 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using CommunityToolkit.Mvvm.Messaging.Messages;
 using Reactive.Bindings;
 using Reactive.Bindings.Disposables;
 using Reactive.Bindings.Extensions;
@@ -7,7 +9,7 @@ using WpfLibrary;
 
 namespace WpfDependencyInjection.ViewModels;
 
-public sealed partial class Child1ViewModel : ObservableObject, IIndexedPage
+public sealed partial class Child1ViewModel : ObservableRecipient, IIndexedPage
 {
     private CompositeDisposable? _disposables;
     private readonly IExternalObject _externalObject;
@@ -15,7 +17,10 @@ public sealed partial class Child1ViewModel : ObservableObject, IIndexedPage
     public string Message { get; }
 
     [ObservableProperty]
-    private IReadOnlyReactiveProperty<int>? _counter;
+    IReadOnlyReactiveProperty<int>? _libCounter;
+
+    [ObservableProperty]
+    int _vmCounter;
 
     [ObservableProperty]
     PageIndex _index;
@@ -26,24 +31,19 @@ public sealed partial class Child1ViewModel : ObservableObject, IIndexedPage
         Message = externalObject.GetData();
     }
 
-    [RelayCommand]
-    private void Increment()
-    {
-        _externalObject.IncrementCounter();
-    }
-
     private void Loaded()
     {
         if (_disposables != null && !_disposables.IsDisposed)
             throw new InvalidOperationException($"{GetType().Name} is already loaded.");
 
         var disposables = new CompositeDisposable();
+        System.Reactive.Disposables.Disposable.Create(() => IsActive = false).AddTo(disposables);
 
-        Counter = _externalObject.ObserveProperty(static x => x.Counter)
-            .ToReadOnlyReactiveProperty()
-            .AddTo(disposables);
+        LibCounter = _externalObject.ObserveProperty(static x => x.Counter)
+            .ToReadOnlyReactiveProperty().AddTo(disposables);
 
         _disposables = disposables;
+        IsActive = true;
     }
 
     private void Unloaded()
@@ -56,5 +56,25 @@ public sealed partial class Child1ViewModel : ObservableObject, IIndexedPage
     {
         if (toActive) Loaded();
         else Unloaded();
+    }
+
+    [RelayCommand]
+    private void IncrementLibCount()
+    {
+        _externalObject.IncrementCounter();
+    }
+
+    [RelayCommand]
+    private void IncrementVmCount()
+    {
+        WeakReferenceMessenger.Default.Send<IncrementVmCounterRequestMessage>();
+    }
+
+    sealed class IncrementVmCounterRequestMessage : RequestMessage<nint> { }
+
+    protected override void OnActivated()
+    {
+        Messenger.Register<Child1ViewModel, IncrementVmCounterRequestMessage>(this,
+            static (r, _) => r.VmCounter++);
     }
 }
