@@ -42,9 +42,9 @@ public static class Program
 
                 services.AddTransientFactory<Parent1Page>();
                 services.AddTransient<Parent1PageViewModel>();
-                services.AddTransient<Child1View>();
+                services.AddViewAndViewModel<Child1View, Child1ViewModel>();
 
                 //services.AddTransient<ChildFormViewModel>();
-                services.AddSingleton<IDataAccess, DataAccess>();
+                services.AddSingleton<IExternalObject, ExternalObject>();
             });
 }

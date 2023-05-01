@@ -16,6 +16,6 @@
         <TextBlock DockPanel.Dock="Top" Text="{Binding Index.Index, StringFormat='Index={0}'}" />
         <TextBlock DockPanel.Dock="Top" Text="{Binding Counter}" />
 
-        <ContentControl x:Name="content" Margin="20" />
+        <ContentControl x:Name="content" Margin="10" />
     </DockPanel>
 </UserControl>
