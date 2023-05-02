@@ -1,17 +1,23 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using Microsoft.Extensions.Options;
 
 namespace WpfDependencyInjection.Views;
 
 public partial class MainWindow : Window
 {
+    // ページ表示の最大数
+    private readonly int _pagesCountMax;
+
     private readonly IIndexedFactory<ParentPage> _parentFactory;
+    
     private readonly List<Control> _pages = new();
     private int _displayedPagesCount = 0;
 
-    public MainWindow(IIndexedFactory<ParentPage> parentFactory)
+    public MainWindow(IOptions<AppSettings> appSettings, IIndexedFactory<ParentPage> parentFactory)
     {
         // DataContext は ViewModelLocator で設定しています（使用例です。直で設定してもよいです。）
+        _pagesCountMax = appSettings.Value.PagesCountMax;
         _parentFactory = parentFactory;
         InitializeComponent();
 
@@ -22,6 +28,10 @@ public partial class MainWindow : Window
 
     private void AddNewPage()
     {
+        // 最大数の制限
+        if (_pagesCountMax <= _displayedPagesCount)
+            return;
+
         // 非表示のPageが存在しなければインスタンスを追加します
         if (_pages.Count <= _displayedPagesCount)
         {

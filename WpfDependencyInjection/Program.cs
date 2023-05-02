@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using WpfDependencyInjection.ViewModels;
@@ -25,21 +26,32 @@ public static class Program
             Debug.WriteLine("MainWindowClosing()");
         };
 
-        App app = new();
-        app.InitializeComponent();
+        var app = host.Services.GetRequiredService<App>();
         app.MainWindow = mainWindow;
+        app.InitializeComponent();
         app.Run();
     }
 
+    /// <summary>
+    /// ViewModelLocator から使用されます。(直で DataContext を設定する場合は必要ありません)
+    /// </summary>
     internal static object GetViewModel(Type viewType) => _host!.Services.GetRequiredViewModel(viewType);
 
     private static IHostBuilder CreateHostBuilder(string[] args)
-        => Host.CreateDefaultBuilder()
-            .ConfigureServices((_, services) =>
+        => Host.CreateDefaultBuilder(args)
+            .ConfigureAppConfiguration((_, configBuilder) =>
             {
-                services.AddSingleton<IExternalObject, ExternalObject>();
+                configBuilder.SetBasePath(System.IO.Directory.GetCurrentDirectory());
+                configBuilder.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
+            })
+            .ConfigureServices((hostContext, services) =>
+            {
+                services.Configure<AppSettings>(hostContext.Configuration.GetSection(nameof(AppSettings)));
 
+                services.AddSingleton<App>();
                 services.AddViewAndViewModel<MainWindow, MainWindowViewModel>();
+
+                services.AddSingleton<IExternalObject, ExternalObject>();
 
                 services.AddSingleton<IPageIndexCounter, PageIndexCounter>();
                 services.AddIndexedFactory<ParentPage>();
