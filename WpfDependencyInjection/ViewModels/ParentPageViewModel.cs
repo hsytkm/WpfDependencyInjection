@@ -5,7 +5,7 @@ using Reactive.Bindings.Extensions;
 
 namespace WpfDependencyInjection.ViewModels;
 
-public sealed partial class ParentPageViewModel : ObservableObject, IIndexedPage
+public sealed partial class ParentPageViewModel : ObservableObject, IIndexedViewModel
 {
     private CompositeDisposable? _disposables;
 

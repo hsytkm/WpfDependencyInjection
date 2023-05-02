@@ -9,7 +9,7 @@ using WpfLibrary;
 
 namespace WpfDependencyInjection.ViewModels;
 
-public sealed partial class ChildViewModel : ObservableRecipient, IIndexedPage
+public sealed partial class ChildViewModel : ObservableRecipient, IIndexedViewModel
 {
     private CompositeDisposable? _disposables;
     private readonly IExternalObject _externalObject;

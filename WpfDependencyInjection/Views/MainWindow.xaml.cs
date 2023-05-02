@@ -11,6 +11,7 @@ public partial class MainWindow : Window
 
     public MainWindow(IIndexedFactory<ParentPage> parentFactory)
     {
+        // DataContext は ViewModelLocator で設定しています（使用例です。直で設定してもよいです。）
         _parentFactory = parentFactory;
         InitializeComponent();
 
