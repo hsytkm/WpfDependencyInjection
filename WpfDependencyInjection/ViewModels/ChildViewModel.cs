@@ -14,6 +14,8 @@ public sealed partial class ChildViewModel : ObservableRecipient, IIndexedPage
     private CompositeDisposable? _disposables;
     private readonly IExternalObject _externalObject;
 
+    public PageIndex Index { get; }
+
     public string Message { get; }
 
     [ObservableProperty]
@@ -22,11 +24,9 @@ public sealed partial class ChildViewModel : ObservableRecipient, IIndexedPage
     [ObservableProperty]
     int _vmCounter;
 
-    [ObservableProperty]
-    PageIndex _index;
-
-    public ChildViewModel(IExternalObject externalObject)
+    public ChildViewModel(IPageIndexCounter counter, IExternalObject externalObject)
     {
+        Index = counter.Value;
         _externalObject = externalObject;
         Message = externalObject.GetData();
     }

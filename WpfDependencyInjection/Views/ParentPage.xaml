@@ -13,8 +13,8 @@
 
     <DockPanel Background="LightBlue">
         <TextBlock DockPanel.Dock="Top" Text="Parent" />
-        <TextBlock DockPanel.Dock="Top" Text="{Binding Index.Index, StringFormat='V={0}', RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" />
-        <TextBlock DockPanel.Dock="Top" Text="{Binding Index.Index, StringFormat='VM={0}'}" />
+        <TextBlock DockPanel.Dock="Top" Text="{Binding Index.Value, StringFormat='V={0}', RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" />
+        <TextBlock DockPanel.Dock="Top" Text="{Binding Index.Value, StringFormat='VM={0}'}" />
         <TextBlock DockPanel.Dock="Top" Text="{Binding Counter}" />
 
         <ContentControl x:Name="content" Margin="10" />

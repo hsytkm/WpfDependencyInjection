@@ -1,7 +1,6 @@
 ﻿using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using WpfDependencyInjection.StartupHelpers;
 using WpfDependencyInjection.ViewModels;
 using WpfDependencyInjection.Views;
 using WpfLibrary;
@@ -38,13 +37,14 @@ public static class Program
         => Host.CreateDefaultBuilder()
             .ConfigureServices((_, services) =>
             {
+                services.AddSingleton<IExternalObject, ExternalObject>();
+
                 services.AddViewAndViewModel<MainWindow, MainWindowViewModel>();
 
-                services.AddTransientFactory<ParentPage>();
+                services.AddSingleton<IPageIndexCounter, PageIndexCounter>();
+                services.AddIndexedFactory<ParentPage>();
                 services.AddTransient<ParentPageViewModel>();
                 services.AddViewAndViewModel<ChildView, ChildViewModel>();
 
-                //services.AddTransient<ChildFormViewModel>();
-                services.AddSingleton<IExternalObject, ExternalObject>();
             });
 }

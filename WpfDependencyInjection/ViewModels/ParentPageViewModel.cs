@@ -9,13 +9,15 @@ public sealed partial class ParentPageViewModel : ObservableObject, IIndexedPage
 {
     private CompositeDisposable? _disposables;
 
-    [ObservableProperty]
-    PageIndex _index;
+    public PageIndex Index { get; }
 
     [ObservableProperty]
     int _counter;
 
-    public ParentPageViewModel() { }
+    public ParentPageViewModel(IPageIndexCounter counter)
+    {
+        Index = counter.Value;
+    }
 
     private void Loaded()
     {

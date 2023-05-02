@@ -4,21 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace WpfDependencyInjection.StartupHelpers;
 
-internal static class ServiceExtensions1
-{
-    /// <summary>
-    /// T を生成する Factory を登録します
-    /// </summary>
-    internal static void AddTransientFactory<T>(this IServiceCollection services)
-        where T : class
-    {
-        services.AddTransient<T>();
-        services.AddSingleton<Func<T>>(static x => () => x.GetService<T>()!);
-        services.AddSingleton<IAbstractFactory<T>, AbstractFactory<T>>();
-    }
-}
-
-internal static class ServiceExtensions2
+internal static class ServiceExtensions
 {
     private static readonly Dictionary<Type, Type> _bindingViewAndViewModelDictionary = new();
 

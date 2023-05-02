@@ -8,24 +8,11 @@ public partial class ParentPage : UserControl, IIndexedPage
 {
     private readonly ParentPageViewModel _viewModel;
 
-    public PageIndex Index
+    public PageIndex Index { get; }
+
+    public ParentPage(IPageIndexCounter counter, ParentPageViewModel viewModel, ChildView childView)
     {
-        get => _index;
-        internal set
-        {
-            if (value.IsZero())
-                throw new ArgumentException("Index zero isn't allowed.", nameof(value));
-
-            if (!_index.IsZero())
-                throw new InvalidOperationException("Index is already set.");
-
-            _viewModel.Index = _index = value;
-        }
-    }
-    private PageIndex _index;
-
-    public ParentPage(ParentPageViewModel viewModel, ChildView childView)
-    {
+        Index = counter.Value;
         DataContext = _viewModel = viewModel;
 
         InitializeComponent();
@@ -36,7 +23,7 @@ public partial class ParentPage : UserControl, IIndexedPage
 
     private void UserControl_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
     {
-        Debug.WriteLine($"IsVisibleChanged(Index={Index.Index}) : {e.NewValue}");
+        Debug.WriteLine($"IsVisibleChanged(Index={Index.Value}) : {e.NewValue}");
 
         if (e.NewValue is bool toActive)
             _viewModel.ToggleActivation(toActive);

@@ -1,28 +1,20 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using WpfDependencyInjection.StartupHelpers;
 
 namespace WpfDependencyInjection.Views;
 
 public partial class MainWindow : Window
 {
-    private readonly IAbstractFactory<ParentPage> _parentFactory;
+    private readonly IIndexedFactory<ParentPage> _parentFactory;
     private readonly List<Control> _pages = new();
     private int _displayedPagesCount = 0;
 
-    public MainWindow(IAbstractFactory<ParentPage> parentFactory)
+    public MainWindow(IIndexedFactory<ParentPage> parentFactory)
     {
-        InitializeComponent();
         _parentFactory = parentFactory;
+        InitializeComponent();
 
         AddNewPage();
-    }
-
-    private ParentPage CreateParent1Page()
-    {
-        var page = _parentFactory.Create();
-        page.Index = new PageIndex(_displayedPagesCount + 1);   // 1~
-        return page;
     }
 
     private void AddButton_Click(object sender, RoutedEventArgs e) => AddNewPage();
@@ -32,7 +24,7 @@ public partial class MainWindow : Window
         // 非表示のPageが存在しなければインスタンスを追加します
         if (_pages.Count <= _displayedPagesCount)
         {
-            var page = CreateParent1Page();
+            var page = _parentFactory.Create();
             _pages.Add(page);
         }
 
