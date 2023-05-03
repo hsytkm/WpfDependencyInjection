@@ -2,7 +2,7 @@
 
 namespace WpfLibrary;
 
-public interface IExternalObject : INotifyPropertyChanged
+public interface IExternalObject : INotifyPropertyChanged, IDisposable
 {
     int Counter { get; }
     void IncrementCounter();

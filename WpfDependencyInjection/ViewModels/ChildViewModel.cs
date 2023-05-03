@@ -13,6 +13,7 @@ public sealed partial class ChildViewModel : ObservableRecipient, IIndexedViewMo
 {
     private CompositeDisposable? _disposables;
     private readonly IExternalObject _externalObject;
+    private readonly ILogger<ChildViewModel> _logger;
 
     public PageIndex Index { get; }
 
@@ -24,10 +25,14 @@ public sealed partial class ChildViewModel : ObservableRecipient, IIndexedViewMo
     [ObservableProperty]
     int _vmCounter;
 
-    public ChildViewModel(IPageIndexCounter counter, IExternalObject externalObject)
+    public ChildViewModel(
+        IPageIndexCounter counter,
+        IExternalObject externalObject,
+        ILogger<ChildViewModel> logger)
     {
-        Index = counter.Value;
+        Index = counter.Index;
         _externalObject = externalObject;
+        _logger = logger;
         Message = externalObject.GetData();
     }
 
@@ -54,8 +59,16 @@ public sealed partial class ChildViewModel : ObservableRecipient, IIndexedViewMo
 
     public void ToggleActivation(bool toActive)
     {
-        if (toActive) Loaded();
-        else Unloaded();
+        if (toActive)
+        {
+            _logger.LogTrace("Loaded Index={Index}", Index.Value);
+            Loaded();
+        }
+        else
+        {
+            _logger.LogTrace("Unloaded Index={Index}", Index.Value);
+            Unloaded();
+        }
     }
 
     [RelayCommand]
@@ -67,6 +80,7 @@ public sealed partial class ChildViewModel : ObservableRecipient, IIndexedViewMo
     [RelayCommand]
     private void IncrementVmCount()
     {
+        _logger.LogTrace("Message.Send<IncrementVmCounterRequestMessage> (Before={Counter})", VmCounter);
         WeakReferenceMessenger.Default.Send<IncrementVmCounterRequestMessage>();
     }
 
@@ -74,7 +88,10 @@ public sealed partial class ChildViewModel : ObservableRecipient, IIndexedViewMo
 
     protected override void OnActivated()
     {
-        Messenger.Register<ChildViewModel, IncrementVmCounterRequestMessage>(this,
-            static (r, _) => r.VmCounter++);
+        Messenger.Register<ChildViewModel, IncrementVmCounterRequestMessage>(this, static (r, _) =>
+        {
+            r.VmCounter++;
+            r._logger.LogTrace("CountUp (Index={Index}, After={Counter})", r.Index, r.VmCounter);
+        });
     }
 }

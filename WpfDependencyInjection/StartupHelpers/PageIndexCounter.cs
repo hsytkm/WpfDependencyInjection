@@ -2,7 +2,7 @@
 
 public interface IPageIndexCounter
 {
-    PageIndex Value { get; }
+    PageIndex Index { get; }
 }
 
 /// <summary>
@@ -15,6 +15,6 @@ public sealed class PageIndexCounter : IPageIndexCounter
     //   Child -> 1, Parent -> 1
     //   Child -> 2, Parent -> 2
 
-    public PageIndex Value { get; private set; } = new(0);
-    public PageIndex Increment() => ++Value;
+    public PageIndex Index { get; private set; } = new(0);
+    public PageIndex Increment() => ++Index;
 }

@@ -8,15 +8,19 @@ namespace WpfDependencyInjection.ViewModels;
 public sealed partial class ParentPageViewModel : ObservableObject, IIndexedViewModel
 {
     private CompositeDisposable? _disposables;
+    private readonly ILogger<ParentPageViewModel> _logger;
 
     public PageIndex Index { get; }
 
     [ObservableProperty]
     int _counter;
 
-    public ParentPageViewModel(IPageIndexCounter counter)
+    public ParentPageViewModel(
+        IPageIndexCounter counter,
+        ILogger<ParentPageViewModel> logger)
     {
-        Index = counter.Value;
+        Index = counter.Index;
+        _logger = logger;
     }
 
     private void Loaded()
@@ -27,8 +31,7 @@ public sealed partial class ParentPageViewModel : ObservableObject, IIndexedView
         var disposables = new CompositeDisposable();
 
         Observable.Timer(TimeSpan.Zero, TimeSpan.FromMilliseconds(250))
-            .Subscribe(_ => Counter++)
-            .AddTo(disposables);
+            .Subscribe(_ => Counter++).AddTo(disposables);
 
         _disposables = disposables;
     }
@@ -41,7 +44,15 @@ public sealed partial class ParentPageViewModel : ObservableObject, IIndexedView
 
     public void ToggleActivation(bool toActive)
     {
-        if (toActive) Loaded();
-        else Unloaded();
+        if (toActive)
+        {
+            _logger.LogTrace("Loaded Index={Index}", Index.Value);
+            Loaded();
+        }
+        else
+        {
+            _logger.LogTrace("Unloaded Index={Index}", Index.Value);
+            Unloaded();
+        }
     }
 }

@@ -11,7 +11,7 @@ public abstract class IndexedUserControl : UserControl, IIndexedView
 
     public IndexedUserControl(IPageIndexCounter counter, IIndexedViewModel viewModel)
     {
-        Index = counter.Value;
+        Index = counter.Index;
         DataContext = _viewModel = viewModel;
 
         IsVisibleChanged += UserControl_IsVisibleChanged;

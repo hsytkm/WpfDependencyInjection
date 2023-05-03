@@ -37,4 +37,9 @@ public class ExternalObject : IExternalObject
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         return true;
     }
+
+    public void Dispose()
+    {
+        Debug.WriteLine("ExternalObject is disposed.");
+    }
 }
