@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "WpfDependencyInjection": {
+      "commandName": "Project",
+      "commandLineArgs": "PageCount=2"
+    }
+  }
+}

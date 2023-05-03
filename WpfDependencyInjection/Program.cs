@@ -9,12 +9,12 @@ using WpfLibrary;
 
 namespace WpfDependencyInjection;
 
-public class Program
+class Program
 {
     private static IHost? _host;
 
     [STAThread]
-    private static void Main(string[] args)
+    static void Main(string[] args)
     {
         using var host = _host = CreateHostBuilder(args).Build();
         host.Start();
@@ -46,6 +46,22 @@ public class Program
         logger.LogInformation("--- End Main ---");
     }
 
+#if false
+    // Mainメソッドの非同期化
+    // Main に [STAThread] をつけて async 呼ぶと Thread で怒られるので自分で指定します
+    static async Task Main(string[] args)
+    {
+        if (!Thread.CurrentThread.TrySetApartmentState(ApartmentState.STA))
+        {
+            Thread.CurrentThread.SetApartmentState(ApartmentState.Unknown);
+            Thread.CurrentThread.SetApartmentState(ApartmentState.STA);
+        }
+        using var host = _host = CreateHostBuilder(args).Build();
+        await host.StartAsync().ConfigureAwait(false);
+        ...
+    }
+#endif
+
     /// <summary>
     /// ViewModelLocator から使用されます。(直で DataContext を設定する場合は必要ありません)
     /// </summary>
@@ -55,8 +71,9 @@ public class Program
         .CreateDefaultBuilder(args)
         .ConfigureAppConfiguration((_, configBuilder) =>
         {
+            configBuilder.AddCommandLine(args);
             configBuilder.SetBasePath(System.IO.Directory.GetCurrentDirectory());
-            configBuilder.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
+            configBuilder.AddJsonFile("appsettings.json", optional: true, reloadOnChange: false);
         })
         .UseSerilog((hostingContext, services, loggerConfiguration) =>
         {
@@ -78,6 +95,7 @@ public class Program
         })
         .ConfigureServices((hostContext, services) =>
         {
+            services.Configure<CommandLineArgs>(hostContext.Configuration);
             services.Configure<AppSettings>(hostContext.Configuration.GetSection(nameof(AppSettings)));
 
             services.AddSingleton<App>();

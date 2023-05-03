@@ -14,15 +14,18 @@ public partial class MainWindow : Window
     private readonly List<Control> _pages = new();
     private int _displayedPagesCount = 0;
 
-    public MainWindow(IOptions<AppSettings> appSettings, ILogger<MainWindow> logger, IIndexedFactory<ParentPage> parentFactory)
+    public MainWindow(IOptions<AppSettings> settings, IOptions<CommandLineArgs> args, IIndexedFactory<ParentPage> parentFactory, ILogger<MainWindow> logger)
     {
         // DataContext は ViewModelLocator で設定しています（使用例です。直で設定してもよいです。）
-        _pagesCountMax = appSettings.Value.PagesCountMax;
+        _pagesCountMax = settings.Value.PagesCountMax;
         _logger = logger;
         _parentFactory = parentFactory;
         InitializeComponent();
 
-        AddNewPage();
+        // 初期ページ数
+        int initialPageCount = Math.Min(args.Value.PageCount, _pagesCountMax);
+        for (int i = 0; i < initialPageCount; i++)
+            AddNewPage();
     }
 
     private void AddButton_Click(object sender, RoutedEventArgs e) => AddNewPage();
