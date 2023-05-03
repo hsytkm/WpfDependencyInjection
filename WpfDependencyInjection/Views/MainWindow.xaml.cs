@@ -14,7 +14,11 @@ public partial class MainWindow : Window
     private readonly List<Control> _pages = new();
     private int _displayedPagesCount = 0;
 
-    public MainWindow(IOptions<AppSettings> settings, IOptions<CommandLineArgs> args, IIndexedFactory<ParentPage> parentFactory, ILogger<MainWindow> logger)
+    public MainWindow(
+        IOptions<AppSettings> settings,
+        IOptions<CommandLineArgs> args,
+        IIndexedFactory<ParentPage> parentFactory,
+        ILogger<MainWindow> logger)
     {
         // DataContext は ViewModelLocator で設定しています（使用例です。直で設定してもよいです。）
         _pagesCountMax = settings.Value.PagesCountMax;

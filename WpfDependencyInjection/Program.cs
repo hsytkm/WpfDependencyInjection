@@ -1,5 +1,4 @@
-﻿using System.Windows;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
@@ -16,39 +15,42 @@ class Program
     [STAThread]
     static void Main(string[] args)
     {
-        using var host = _host = CreateHostBuilder(args).Build();
-        host.Start();
+        ILogger<Program>? logger;
 
-        var logger = host.Services.GetRequiredService<ILogger<Program>>();
-
-        // VSColorOutput64 で色分けすると捗ります。 コメントは {Level:u3} の文字列です。
-        logger.LogCritical("Fatal");            // FTL
-        logger.LogError("Error");               // ERR
-        logger.LogWarning("Warning");           // WRN
-        logger.LogInformation("Information");   // INF
-        logger.LogDebug("Debug");               // DBG
-        logger.LogTrace("Verbose");             // VRB
-
-        logger.LogInformation("--- Start Main ---");
-
-        var mainWindow = host.Services.GetRequiredService<MainWindow>();
-        mainWindow.Visibility = Visibility.Visible;
-        mainWindow.Closing += (_, e) =>
+        using (var host = _host = CreateHostBuilder(args).Build())
         {
-            if (e.Cancel) return;
-            Debug.WriteLine("MainWindowClosing()");
-        };
+            host.Start();
 
-        var app = host.Services.GetRequiredService<App>();
-        app.MainWindow = mainWindow;
-        app.InitializeComponent();
-        app.Run();
+            logger = host.Services.GetRequiredService<ILogger<Program>>();
+
+            // VSColorOutput64 で色分けすると捗ります。 コメントは {Level:u3} の文字列です。
+            logger.LogCritical("Fatal");            // FTL
+            logger.LogError("Error");               // ERR
+            logger.LogWarning("Warning");           // WRN
+            logger.LogInformation("Information");   // INF
+            logger.LogDebug("Debug");               // DBG
+            logger.LogTrace("Verbose");             // VRB
+
+            logger.LogInformation("--- Start Main ---");
+
+            var mainWindow = host.Services.GetRequiredService<MainWindow>();
+            mainWindow.Closing += (_, e) =>
+            {
+                if (e.Cancel) return;
+                Debug.WriteLine("MainWindowClosing()");
+            };
+
+            var app = host.Services.GetRequiredService<App>();
+            app.InitializeComponent();
+            app.Run(mainWindow);
+        }
+
         logger.LogInformation("--- End Main ---");
     }
 
 #if false
-    // Mainメソッドの非同期化
-    // Main に [STAThread] をつけて async 呼ぶと Thread で怒られるので自分で指定します
+    // Mainメソッドを非同期化すると、[STAThread] を付けていてもUIコンポーネントの生成時に Thread で怒られます。
+    // 以下のように自分で指定すれば対応できます。
     static async Task Main(string[] args)
     {
         if (!Thread.CurrentThread.TrySetApartmentState(ApartmentState.STA))
@@ -62,17 +64,15 @@ class Program
     }
 #endif
 
-    /// <summary>
-    /// ViewModelLocator から使用されます。(直で DataContext を設定する場合は必要ありません)
-    /// </summary>
+    // ViewModelLocator から使用されます。(直で DataContext を設定する場合は必要ありません)
     internal static object GetViewModel(Type viewType) => _host!.Services.GetRequiredViewModel(viewType);
 
     private static IHostBuilder CreateHostBuilder(string[] args) => Host
         .CreateDefaultBuilder(args)
-        .ConfigureAppConfiguration((_, configBuilder) =>
+        .ConfigureAppConfiguration((context, configBuilder) =>
         {
             configBuilder.AddCommandLine(args);
-            configBuilder.SetBasePath(System.IO.Directory.GetCurrentDirectory());
+            configBuilder.SetBasePath(context.HostingEnvironment.ContentRootPath);  // ローカルでは同じPATHでした。 System.IO.Directory.GetCurrentDirectory()
             configBuilder.AddJsonFile("appsettings.json", optional: true, reloadOnChange: false);
         })
         .UseSerilog((hostingContext, services, loggerConfiguration) =>
@@ -99,7 +99,10 @@ class Program
             services.Configure<AppSettings>(hostContext.Configuration.GetSection(nameof(AppSettings)));
 
             services.AddSingleton<App>();
-            services.AddViewAndViewModel<MainWindow, MainWindowViewModel>();    // for ViewModelLocator
+
+            // ViewModelLocator のサンプルとして AddViewAndViewModel() を使用していますが、
+            // コードビハインドで(View.Ctor から) DataContext を差し込めばよい気がしてきました。
+            services.AddViewAndViewModel<MainWindow, MainWindowViewModel>();
 
             services.AddSingleton<IExternalObject, ExternalObject>();
 

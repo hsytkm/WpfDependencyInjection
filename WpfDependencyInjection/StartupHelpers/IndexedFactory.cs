@@ -21,7 +21,9 @@ internal sealed class IndexedFactory<T> : IIndexedFactory<T>
 
     public T Create()
     {
-        _counter.Increment();   // インスタンス作成前にインクリメントするルールです
+        // インスタンス作成前にインクリメントするルールです
+        _counter.Increment();
+
         return _factory();
     }
 }
